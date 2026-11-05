@@ -2,9 +2,8 @@ name: Auto Commit
 
 on:
   schedule:
-    # Runs every day at 00:00 UTC
-    - cron: '0 0 * * *'
-  workflow_dispatch: # Allows you to trigger it manually from GitHub
+    - cron: '0 12 * * *' # Runs daily at noon UTC
+  workflow_dispatch:
 
 jobs:
   commit:
@@ -13,14 +12,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Update file
-        run: |
-          echo "Activity update: $(date)" >> activity_log.txt
-
-      - name: Commit and Push
+      - name: Generate Multiple Commits
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add activity_log.txt
-          git commit -m "chore: automated contribution update"
+          
+          # Generate between 3 and 8 random commits
+          NUM_COMMITS=$((RANDOM % 6 + 3))
+          for i in $(seq 1 $NUM_COMMITS); do
+            echo "Activity log update: $(date) - commit #$i" >> activity_log.txt
+            git add activity_log.txt
+            git commit -m "chore: automated contribution update #$i"
+          done
+          
           git push
