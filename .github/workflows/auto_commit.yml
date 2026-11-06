@@ -2,8 +2,12 @@ name: Auto Commit
 
 on:
   schedule:
-    - cron: '0 12 * * *' # Runs daily at noon UTC
+    # Runs every 4 hours (at minute 0 of hour 0, 4, 8, 12, 16, 20)
+    - cron: '0 */4 * * *'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   commit:
@@ -17,7 +21,6 @@ jobs:
           git config --global user.name "MOHAMMED-ALI-EL-KHADDAR"
           git config --global user.email "elkhaddarmohammedali@gmail.com"
 
-          # Generate between 3 and 8 random commits
           NUM_COMMITS=$((RANDOM % 6 + 3))
           for i in $(seq 1 $NUM_COMMITS); do
             echo "Activity log update: $(date) - commit #$i" >> activity_log.txt
